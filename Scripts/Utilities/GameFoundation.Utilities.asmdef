@@ -1,0 +1,33 @@
+{
+  "name": "GameFoundation.Utilities",
+  "rootNamespace": "",
+  "references": [
+    "I2Localization.Scripts",
+    "MasterAAASound.Scripts",
+    "Unity.TextMeshPro",
+    "UniTask",
+    "Unity.Timeline",
+    "GameFoundation.AssetLibrary",
+    "GameFoundation.DI",
+    "GameFoundation.Models",
+    "GameFoundation.Signals",
+    "UniTask.Addressables",
+    "Unity.ResourceManager",
+    "Unity.Addressables",
+    "Zenject",
+    "VContainer",
+    "BuildScript.Runtime"
+  ],
+  "versionDefines": [
+    {
+      "name": "com.svermeulen.extenject",
+      "expression": "",
+      "define": "GDK_ZENJECT"
+    },
+    {
+      "name": "jp.hadashikick.vcontainer",
+      "expression": "",
+      "define": "GDK_VCONTAINER"
+    }
+  ]
+}

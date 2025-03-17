@@ -1,0 +1,36 @@
+{
+  "name": "GameFoundation.UIModule",
+  "rootNamespace": "GameFoundation.UIModule",
+  "references": [
+    "GameFoundation.AssetLibrary",
+    "GameFoundation.Signals",
+    "GameFoundation.Utilities",
+    "GameFoundation.DI",
+    "Unity.TextMeshPro",
+    "Unity.Addressables",
+    "Unity.ResourceManager",
+    "DOTween.Modules",
+    "OSA.Core",
+    "UniTask",
+    "UniTask.Addressables",
+    "R3.Unity",
+    "Zenject",
+    "VContainer",
+    "Unity.RenderPipelines.Universal.Runtime",
+    "LeTai.TranslucentImage.Scripts",
+    "GameFoundation.Models",
+    "I2Localization.Scripts"
+  ],
+  "versionDefines": [
+    {
+      "name": "com.svermeulen.extenject",
+      "expression": "",
+      "define": "GDK_ZENJECT"
+    },
+    {
+      "name": "jp.hadashikick.vcontainer",
+      "expression": "",
+      "define": "GDK_VCONTAINER"
+    }
+  ]
+}

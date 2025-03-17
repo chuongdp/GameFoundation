@@ -1,0 +1,31 @@
+{
+  "name": "GameFoundation.Script",
+  "rootNamespace": "GameFoundation",
+  "references": [
+    "GameFoundation.Utilities",
+    "GameFoundation.AssetLibrary",
+    "GameFoundation.BlueprintFlow",
+    "GameFoundation.Models",
+    "GameFoundation.UIModule",
+    "GameFoundation.Signals",
+    "GameFoundation.DI",
+    "MasterAAASound.Scripts",
+    "I2Localization.Scripts",
+    "Zenject",
+    "VContainer",
+    "DOTween.Modules",
+    "OSA.Core"
+  ],
+  "versionDefines": [
+    {
+      "name": "com.svermeulen.extenject",
+      "expression": "",
+      "define": "GDK_ZENJECT"
+    },
+    {
+      "name": "jp.hadashikick.vcontainer",
+      "expression": "",
+      "define": "GDK_VCONTAINER"
+    }
+  ]
+}
