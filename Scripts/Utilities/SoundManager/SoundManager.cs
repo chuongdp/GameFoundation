@@ -79,10 +79,7 @@ namespace DigitalRuby.SoundManagerNamespace
         /// Play this looping audio source
         /// </summary>
         /// <param name="isMusic">True if music, false if sound effect</param>
-        public void Play(bool isMusic)
-        {
-            this.Play(1.0f, isMusic);
-        }
+        public void Play(bool isMusic) { this.Play(1.0f, isMusic); }
 
         /// <summary>
         /// Play this looping audio source
@@ -95,9 +92,9 @@ namespace DigitalRuby.SoundManagerNamespace
             if (this.AudioSource != null)
             {
                 var audioSourceVolume = this.AudioSource.isPlaying ? this.AudioSource.volume : 0.0f;
-                #if UNITY_IOS
+#if UNITY_IOS
                 audioSourceVolume = 1;
-                #endif
+#endif
                 this.AudioSource.volume   = this.startVolume = audioSourceVolume;
                 this.AudioSource.loop     = true;
                 this.currentMultiplier    = this.startMultiplier;
@@ -108,9 +105,11 @@ namespace DigitalRuby.SoundManagerNamespace
                 if (!this.AudioSource.isPlaying)
                 {
                     this.AudioSource.Play();
+
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -119,7 +118,7 @@ namespace DigitalRuby.SoundManagerNamespace
         /// </summary>
         public void Stop()
         {
-            if (this.AudioSource != null && this.AudioSource.isPlaying && !this.Stopping)
+            if (this.AudioSource != null && this.AudioSource.isPlaying)
             {
                 this.startVolume       = this.AudioSource.volume;
                 this.TargetVolume      = 0.0f;
@@ -165,6 +164,7 @@ namespace DigitalRuby.SoundManagerNamespace
                 {
                     this.AudioSource.Stop();
                     this.Stopping = false;
+
                     return true;
                 }
                 else
@@ -187,10 +187,7 @@ namespace DigitalRuby.SoundManagerNamespace
         /// </summary>
         /// <param name="source">AudioSource</param>
         /// <param name="clip">Clip</param>
-        public static void PlayOneShotSoundManaged(this AudioSource source, AudioClip clip)
-        {
-            SoundManager.PlayOneShotSound(source, clip, 1.0f, false);
-        }
+        public static void PlayOneShotSoundManaged(this AudioSource source, AudioClip clip) { SoundManager.PlayOneShotSound(source, clip, 1.0f, false); }
 
         /// <summary>
         /// Play an audio clip once using the global sound volume as a multiplier
@@ -208,10 +205,7 @@ namespace DigitalRuby.SoundManagerNamespace
         /// </summary>
         /// <param name="source">AudioSource</param>
         /// <param name="clip">Clip</param>
-        public static void PlayOneShotMusicManaged(this AudioSource source, AudioClip clip)
-        {
-            SoundManager.PlayOneShotMusic(source, clip, 1.0f);
-        }
+        public static void PlayOneShotMusicManaged(this AudioSource source, AudioClip clip) { SoundManager.PlayOneShotMusic(source, clip, 1.0f); }
 
         /// <summary>
         /// Play an audio clip once using the global music volume as a multiplier
@@ -219,19 +213,13 @@ namespace DigitalRuby.SoundManagerNamespace
         /// <param name="source">AudioSource</param>
         /// <param name="clip">Clip</param>
         /// <param name="volumeScale">Additional volume scale</param>
-        public static void PlayOneShotMusicManaged(this AudioSource source, AudioClip clip, float volumeScale)
-        {
-            SoundManager.PlayOneShotMusic(source, clip, volumeScale);
-        }
+        public static void PlayOneShotMusicManaged(this AudioSource source, AudioClip clip, float volumeScale) { SoundManager.PlayOneShotMusic(source, clip, volumeScale); }
 
         /// <summary>
         /// Play a sound and loop it until stopped, using the global sound volume as a modifier
         /// </summary>
         /// <param name="source">Audio source to play</param>
-        public static void PlayLoopingSoundManaged(this AudioSource source)
-        {
-            SoundManager.PlayLoopingSound(source, 1.0f, 1.0f);
-        }
+        public static void PlayLoopingSoundManaged(this AudioSource source) { SoundManager.PlayLoopingSound(source, 1.0f, 0.2f); }
 
         /// <summary>
         /// Play a sound and loop it until stopped, using the global sound volume as a modifier
@@ -239,19 +227,13 @@ namespace DigitalRuby.SoundManagerNamespace
         /// <param name="source">Audio source to play</param>
         /// <param name="volumeScale">Additional volume scale</param>
         /// <param name="fadeSeconds">The number of seconds to fade in and out</param>
-        public static void PlayLoopingSoundManaged(this AudioSource source, float volumeScale, float fadeSeconds)
-        {
-            SoundManager.PlayLoopingSound(source, volumeScale, fadeSeconds);
-        }
+        public static void PlayLoopingSoundManaged(this AudioSource source, float volumeScale, float fadeSeconds) { SoundManager.PlayLoopingSound(source, volumeScale, fadeSeconds); }
 
         /// <summary>
         /// Play a music track and loop it until stopped, using the global music volume as a modifier
         /// </summary>
         /// <param name="source">Audio source to play</param>
-        public static void PlayLoopingMusicManaged(this AudioSource source)
-        {
-            SoundManager.PlayLoopingMusic(source, 1.0f, 1.0f, false);
-        }
+        public static void PlayLoopingMusicManaged(this AudioSource source) { SoundManager.PlayLoopingMusic(source, 1.0f, 0.2f, false); }
 
         /// <summary>
         /// Play a music track and loop it until stopped, using the global music volume as a modifier
@@ -269,19 +251,13 @@ namespace DigitalRuby.SoundManagerNamespace
         /// Stop a looping sound
         /// </summary>
         /// <param name="source">AudioSource to stop</param>
-        public static void StopLoopingSoundManaged(this AudioSource source)
-        {
-            SoundManager.StopLoopingSound(source);
-        }
+        public static void StopLoopingSoundManaged(this AudioSource source) { SoundManager.StopLoopingSound(source); }
 
         /// <summary>
         /// Stop a looping music track
         /// </summary>
         /// <param name="source">AudioSource to stop</param>
-        public static void StopLoopingMusicManaged(this AudioSource source)
-        {
-            SoundManager.StopLoopingMusic(source);
-        }
+        public static void StopLoopingMusicManaged(this AudioSource source) { SoundManager.StopLoopingMusic(source); }
     }
 
     /// <summary>
@@ -375,10 +351,7 @@ namespace DigitalRuby.SoundManagerNamespace
             }
         }
 
-        private void Start()
-        {
-            UnityEngine.SceneManagement.SceneManager.sceneLoaded += this.SceneManagerSceneLoaded;
-        }
+        private void Start() { UnityEngine.SceneManagement.SceneManager.sceneLoaded += this.SceneManagerSceneLoaded; }
 
         private void Update()
         {
@@ -399,9 +372,11 @@ namespace DigitalRuby.SoundManagerNamespace
                         // cleanup persisted audio from previous scenes
                         Destroy(music[i].AudioSource.gameObject);
                     }
+
                     music.RemoveAt(i);
                 }
             }
+
             for (var i = musicOneShot.Count - 1; i >= 0; i--)
                 if (!musicOneShot[i].isPlaying)
                     musicOneShot.RemoveAt(i);
@@ -449,16 +424,18 @@ namespace DigitalRuby.SoundManagerNamespace
                 if (s.AudioSource == source) sources.RemoveAt(i);
                 if (stopAll) s.Stop();
             }
+
             {
                 source.gameObject.SetActive(true);
-                var s = new LoopingAudioSource(source, fadeSeconds, fadeSeconds, persist);
+                var s = new LoopingAudioSource(source, fadeSeconds, 0f, persist);
                 s.Play(volumeScale, true);
                 s.Tag = persistTag;
                 sources.Add(s);
 
                 if (persist)
                 {
-                    if (!source.gameObject.name.StartsWith("PersistedBySoundManager-")) source.gameObject.name = "PersistedBySoundManager-" + source.gameObject.name + "-" + source.gameObject.GetInstanceID();
+                    if (!source.gameObject.name.StartsWith("PersistedBySoundManager-"))
+                        source.gameObject.name = "PersistedBySoundManager-" + source.gameObject.name + "-" + source.gameObject.GetInstanceID();
                     source.gameObject.transform.parent = null;
                     DontDestroyOnLoad(source.gameObject);
                     persistedSounds.Add(s);
@@ -474,9 +451,11 @@ namespace DigitalRuby.SoundManagerNamespace
                 {
                     s.Stop();
                     source = null;
+
                     break;
                 }
             }
+
             if (source != null) source.Stop();
         }
 
@@ -485,10 +464,7 @@ namespace DigitalRuby.SoundManagerNamespace
         /// </summary>
         /// <param name="source">Audio source</param>
         /// <param name="clip">Clip</param>
-        public static void PlayOneShotSound(AudioSource source, AudioClip clip)
-        {
-            PlayOneShotSound(source, clip, 1.0f, false);
-        }
+        public static void PlayOneShotSound(AudioSource source, AudioClip clip) { PlayOneShotSound(source, clip, 1.0f, false); }
 
         /// <summary>
         /// Play a sound once - sound volume will be affected by global sound volume
@@ -535,10 +511,7 @@ namespace DigitalRuby.SoundManagerNamespace
         /// Play a looping sound - sound volume will be affected by global sound volume
         /// </summary>
         /// <param name="source">Audio source to play looping</param>
-        public static void PlayLoopingSound(AudioSource source)
-        {
-            PlayLoopingSound(source, 1.0f, 1.0f);
-        }
+        public static void PlayLoopingSound(AudioSource source) { PlayLoopingSound(source, 1.0f, 0.2f); }
 
         /// <summary>
         /// Play a looping sound - sound volume will be affected by global sound volume
@@ -557,10 +530,7 @@ namespace DigitalRuby.SoundManagerNamespace
         /// </summary>
         /// <param name="source"></param>
         /// <param name="clip"></param>
-        public static void PlayOneShotMusic(AudioSource source, AudioClip clip)
-        {
-            PlayOneShotMusic(source, clip, 1.0f);
-        }
+        public static void PlayOneShotMusic(AudioSource source, AudioClip clip) { PlayOneShotMusic(source, clip, 1.0f); }
 
         /// <summary>
         /// Play a music track once - music volume will be affected by the global music volume
@@ -582,10 +552,7 @@ namespace DigitalRuby.SoundManagerNamespace
         /// Play a looping music track - music volume will be affected by the global music volume
         /// </summary>
         /// <param name="source">Audio source</param>
-        public static void PlayLoopingMusic(AudioSource source)
-        {
-            PlayLoopingMusic(source, 1.0f, 1.0f, false);
-        }
+        public static void PlayLoopingMusic(AudioSource source) { PlayLoopingMusic(source, 1.0f, 0.2f, false); }
 
         /// <summary>
         /// Play a looping music track - music volume will be affected by the global music volume
@@ -604,19 +571,13 @@ namespace DigitalRuby.SoundManagerNamespace
         /// Stop looping a sound for an audio source
         /// </summary>
         /// <param name="source">Audio source to stop looping sound for</param>
-        public static void StopLoopingSound(AudioSource source)
-        {
-            StopLooping(source, sounds);
-        }
+        public static void StopLoopingSound(AudioSource source) { StopLooping(source, sounds); }
 
         /// <summary>
         /// Stop looping music for an audio source
         /// </summary>
         /// <param name="source">Audio source to stop looping music for</param>
-        public static void StopLoopingMusic(AudioSource source)
-        {
-            StopLooping(source, music);
-        }
+        public static void StopLoopingMusic(AudioSource source) { StopLooping(source, music); }
 
         /// <summary>
         /// Stop all looping sounds, music, and music one shots. Non-looping sounds are not stopped.
@@ -633,7 +594,12 @@ namespace DigitalRuby.SoundManagerNamespace
         /// </summary>
         public static void StopAllLoopingSounds()
         {
-            foreach (var s in sounds) s.Stop();
+            Debug.Log($"Sound Manager: Stop All Sound: {sounds.Count}");
+            foreach (var s in sounds)
+            {
+                Debug.Log($"Sound Manager: Stop - {s.AudioSource.clip.name}");
+                s.Stop();
+            }
         }
 
         /// <summary>

@@ -14,19 +14,10 @@
     "UniTask",
     "UniTask.Addressables",
     "R3.Unity",
-    "Zenject",
     "VContainer",
-    "Unity.RenderPipelines.Universal.Runtime",
-    "LeTai.TranslucentImage.Scripts",
-    "GameFoundation.Models",
-    "I2Localization.Scripts"
+    "Unity.RenderPipelines.Universal.Runtime"
   ],
   "versionDefines": [
-    {
-      "name": "com.svermeulen.extenject",
-      "expression": "",
-      "define": "GDK_ZENJECT"
-    },
     {
       "name": "jp.hadashikick.vcontainer",
       "expression": "",

@@ -97,7 +97,7 @@ namespace GameFoundation.Scripts.Utilities.ObjectPool
         private GameObject ChooseRoot(GameObject root)
         {
             if (root != null) return root;
-            if (this.defaultRoot == null) this.defaultRoot = new() { name = "ObjectPoolManager" };
+            if (this.defaultRoot == null) this.defaultRoot = new GameObject { name = "ObjectPoolManager" };
 
             return this.defaultRoot;
         }
@@ -120,7 +120,7 @@ namespace GameFoundation.Scripts.Utilities.ObjectPool
 
         public List<GameObject> GetPooled(GameObject prefab, List<GameObject> list, bool appendList)
         {
-            if (list == null) list = new();
+            if (list == null) list = new List<GameObject>();
             if (!appendList) list.Clear();
             if (this.prefabToObjectPool.TryGetValue(prefab, out var pool)) list.AddRange(pool.pooledObjects);
 
@@ -129,7 +129,7 @@ namespace GameFoundation.Scripts.Utilities.ObjectPool
 
         public List<T> GetPooled<T>(T prefab, List<T> list, bool appendList) where T : Component
         {
-            if (list == null) list = new();
+            if (list == null) list = new List<T>();
             if (!appendList) list.Clear();
             if (this.prefabToObjectPool.TryGetValue(prefab.gameObject, out var pool))
             {
@@ -140,11 +140,11 @@ namespace GameFoundation.Scripts.Utilities.ObjectPool
             return list;
         }
 
-        // public bool IsSpawned(GameObject obj) { return this.spawnedObjects.ContainsKey(obj); }
+        public bool IsSpawned(GameObject obj) { return this.spawnedObjToObjectPool.ContainsKey(obj); }
 
         public List<GameObject> GetSpawned(GameObject prefab, List<GameObject> list, bool appendList)
         {
-            if (list == null) list = new();
+            if (list == null) list = new List<GameObject>();
             if (!appendList) list.Clear();
             if (this.prefabToObjectPool.TryGetValue(prefab, out var pool)) list.AddRange(pool.spawnedObjects);
 
@@ -153,7 +153,7 @@ namespace GameFoundation.Scripts.Utilities.ObjectPool
 
         public List<T> GetSpawned<T>(T prefab, List<T> list, bool appendList) where T : Component
         {
-            if (list == null) list = new();
+            if (list == null) list = new List<T>();
             if (!appendList) list.Clear();
             if (this.prefabToObjectPool.TryGetValue(prefab.gameObject, out var pool))
             {
@@ -205,6 +205,9 @@ namespace GameFoundation.Scripts.Utilities.ObjectPool
             if (this.prefabToObjectPool.TryGetValue(prefab, out var pool))
             {
                 var spawnedObj = pool.Spawn(parent, position, rotation);
+
+                Debug.Log($"Spawned {prefab.name} - {spawnedObj.GetInstanceID()}");
+
                 this.spawnedObjToObjectPool.Add(spawnedObj, pool);
 
                 return spawnedObj;
@@ -272,16 +275,15 @@ namespace GameFoundation.Scripts.Utilities.ObjectPool
 
         public void Recycle(GameObject obj, Transform parent)
         {
-            if (this.spawnedObjToObjectPool.TryGetValue(obj, out var pool))
+            if (obj == null) return;
+            if (!this.spawnedObjToObjectPool.TryGetValue(obj, out var pool))
             {
-                pool.Recycle(obj);
-                if (parent) obj.transform.SetParent(parent);
-                this.spawnedObjToObjectPool.Remove(obj);
+                Debug.LogWarning($"Object {obj.Path()} is not in spawned pool, skipping recycle.");
+                return;
             }
-            else
-            {
-                throw new($"Can't recycle object {obj.Path()}, maybe you already recycled it!");
-            }
+            pool.Recycle(obj);
+            if (parent) obj.transform.SetParent(parent);
+            this.spawnedObjToObjectPool.Remove(obj);
         }
 
         public IEnumerator Recycle(GameObject obj, float delay)

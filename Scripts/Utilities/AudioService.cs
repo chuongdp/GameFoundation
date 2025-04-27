@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Cysharp.Threading.Tasks;
     using DigitalRuby.SoundManagerNamespace;
     using GameFoundation.DI;
@@ -19,19 +20,21 @@
     {
         void PlaySound(string name, AudioSource sender);
 
-        void PlaySound(string name, bool isLoop = false, float volumeScale = 1f, float fadeSeconds = 1f, bool isAverage = false);
+        void PlaySound(string name, bool isLoop = false, float volumeScale = 1f, float fadeSeconds = 0.2f, bool isAverage = false);
 
-        void PlayAudioClip(AudioClip audioClip, bool isLoop = false, float volumeScale = 1f, float fadeSeconds = 1f, bool isAverage = false);
+        void PlayAudioClip(AudioClip audioClip, bool isLoop = false, float volumeScale = 1f, float fadeSeconds = 0.2f, bool isAverage = false);
 
         void StopAllSound();
 
         void StopAll();
 
-        void PlayPlayList(string musicName, bool random = false, float volumeScale = 1f, float fadeSeconds = 1f, bool persist = false);
+        void PlayPlayList(string musicName, bool random = false, float volumeScale = 1f, float fadeSeconds = 0.2f, bool persist = false);
 
-        void PlayPlayList(AudioClip audioClip, bool random = false, float volumeScale = 1f, float fadeSeconds = 1f, bool persist = false);
+        void PlayPlayList(AudioClip audioClip, bool random = false, float volumeScale = 1f, float fadeSeconds = 0.2f, bool persist = false);
 
         void StopPlayList();
+
+        void StopSound(string name);
 
         void SetPlayListTime(float time);
 
@@ -65,17 +68,17 @@
         private readonly ObjectPoolManager objectPoolManager;
         private readonly ILogService       logService;
 
-        private CompositeDisposable             compositeDisposable;
-        private Dictionary<string, AudioSource> loopingSoundNameToSources = new();
-        private AudioSource                     MusicAudioSource;
+        private CompositeDisposable                   compositeDisposable;
+        private Dictionary<string, List<AudioSource>> listSoundNameToSources = new();
+        private AudioSource                           MusicAudioSource;
 
         [Preserve]
         public AudioService(
-            SignalBus signalBus,
-            SoundSetting SoundSetting,
-            IGameAssets gameAssets,
+            SignalBus         signalBus,
+            SoundSetting      SoundSetting,
+            IGameAssets       gameAssets,
             ObjectPoolManager objectPoolManager,
-            ILogService logService
+            ILogService       logService
         )
         {
             this.signalBus         = signalBus;
@@ -90,10 +93,10 @@
 
         private void SubscribeMasterAudio()
         {
-            this.compositeDisposable = new()
+            this.compositeDisposable = new CompositeDisposable
             {
                 this.soundSetting.MusicValue.Subscribe(this.SetMusicValue),
-                this.soundSetting.SoundValue.Subscribe(this.SetSoundValue),
+                this.soundSetting.SoundValue.Subscribe(this.SetSoundValue)
             };
             SoundManager.MusicVolume = this.soundSetting.MusicValue.Value;
             SoundManager.SoundVolume = this.soundSetting.SoundValue.Value;
@@ -114,22 +117,50 @@
             sender.PlayOneShotSoundManaged(audioClip);
         }
 
-        public virtual async void PlaySound(string name, bool isLoop = false, float volumeScale = 1f, float fadeSeconds = 1f, bool isAverage = false)
+        public virtual async void PlaySound(string name, bool isLoop = false, float volumeScale = 1f, float fadeSeconds = 0f, bool isAverage = false)
         {
             var audioClip   = await this.gameAssets.LoadAssetAsync<AudioClip>(name);
             var audioSource = await this.GetAudioSource();
+
+            audioSource.clip   = audioClip;
+            audioSource.loop   = isLoop;
+            audioSource.volume = volumeScale;
+
+            if (!this.listSoundNameToSources.ContainsKey(name))
+                this.listSoundNameToSources[name] = new List<AudioSource>();
+            this.listSoundNameToSources[name].Add(audioSource);
+
             if (isLoop)
             {
-                if (this.loopingSoundNameToSources.ContainsKey(name))
+                audioSource.PlayLoopingSoundManaged(volumeScale: volumeScale, fadeSeconds: fadeSeconds);
+                if (this.listSoundNameToSources[name].Count > 1)
                 {
-                    this.logService.Warning($"You already played  looping - {name}!!!!, do you want to play it again?");
+                    this.logService.Warning($"Looping sound {name} already playing.");
+                    audioSource.Recycle();
 
-                    return;
+                    this.listSoundNameToSources[name].Remove(audioSource);
                 }
+            }
+            else
+            {
+                audioSource.PlayOneShotMusicManaged(audioSource.clip);
+                await UniTask.WaitWhile(() => audioSource.isPlaying);
 
+                if (this.objectPoolManager.IsSpawned(audioSource.gameObject))
+                    audioSource.Recycle();
+
+                this.listSoundNameToSources[name].Remove(audioSource);
+            }
+        }
+
+        public async void PlayAudioClip(AudioClip audioClip, bool isLoop = false, float volumeScale = 1f, float fadeSeconds = 0f, bool isAverage = false)
+        {
+            var audioSource = await this.GetAudioSource();
+
+            if (isLoop)
+            {
                 audioSource.clip = audioClip;
                 audioSource.PlayLoopingSoundManaged(volumeScale, fadeSeconds);
-                this.loopingSoundNameToSources.Add(name, audioSource);
             }
             else
             {
@@ -139,35 +170,40 @@
             }
         }
 
-        public async void PlayAudioClip(AudioClip audioClip, bool isLoop = false, float volumeScale = 1, float fadeSeconds = 1, bool isAverage = false)
+        public void StopSound(string name)
         {
-            var audioSource = await this.GetAudioSource();
+            if (this.listSoundNameToSources.TryGetValue(name, out var sources))
+            {
+                foreach (var source in sources.ToList())
+                {
+                    if (source == null) continue;
 
-            if (isLoop)
-            {
-                audioSource.clip = audioClip;
-                audioSource.PlayLoopingSoundManaged(volumeScale, fadeSeconds);
-            }
-            else
-            {
-                audioSource.PlayOneShotSoundManaged(audioClip);
-                await UniTask.Delay(TimeSpan.FromSeconds(audioClip.length));
-                audioSource.Recycle();
+                    source.Stop();
+                    if (this.objectPoolManager.IsSpawned(source.gameObject))
+                        source.Recycle();
+                    sources.Remove(source);
+                }
             }
         }
 
         public void StopAllSound()
         {
+            Debug.Log($"AudioService: Stop All Sound");
             SoundManager.StopAllLoopingSounds();
             SoundManager.StopAllNonLoopingSounds();
 
-            foreach (var audioSource in this.loopingSoundNameToSources.Values) audioSource.gameObject.Recycle();
+            foreach (var audioSource in this.listSoundNameToSources.Values.SelectMany(audioSourceList => audioSourceList.Where(audioSource => audioSource != null)))
+            {
+                audioSource.Stop();
+                audioSource.gameObject.Recycle();
+            }
 
-            this.loopingSoundNameToSources.Clear();
+            this.listSoundNameToSources.Clear();
         }
 
         public void StopAll()
         {
+            Debug.Log($"AudioService: Stop All");
             this.StopAllSound();
             this.StopAllPlayList();
         }
@@ -179,8 +215,10 @@
         /// <param name="volumeScale">Additional volume scale</param>
         /// <param name="fadeSeconds">The number of seconds to fade in and out</param>
         /// <param name="persist">Whether to persist the looping music between scene changes</param>
-        public virtual async void PlayPlayList(string musicName, bool random = false, float volumeScale = 1f, float fadeSeconds = 1f, bool persist = false)
+        public virtual async void PlayPlayList(string musicName, bool random = false, float volumeScale = 1f, float fadeSeconds = 0f, bool persist = false)
         {
+            Debug.Log($"Playing music: {musicName}");
+            
             this.StopPlayList();
 
             var audioClip = await this.gameAssets.LoadAssetAsync<AudioClip>(musicName);
@@ -189,7 +227,7 @@
             this.MusicAudioSource.PlayLoopingMusicManaged(volumeScale, fadeSeconds, persist);
         }
 
-        public virtual async void PlayPlayList(AudioClip audioClip, bool random = false, float volumeScale = 1f, float fadeSeconds = 1f, bool persist = false)
+        public virtual async void PlayPlayList(AudioClip audioClip, bool random = false, float volumeScale = 1f, float fadeSeconds = 0f, bool persist = false)
         {
             this.StopPlayList();
 

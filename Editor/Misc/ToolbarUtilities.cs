@@ -15,7 +15,7 @@
     public enum ToolbarZone
     {
         ToolbarZoneRightAlign,
-        ToolbarZoneLeftAlign,
+        ToolbarZoneLeftAlign
     }
 
     [InitializeOnLoad]
@@ -61,15 +61,12 @@
                                 style =
                                 {
                                     flexGrow      = 1,
-                                    flexDirection = FlexDirection.Row,
-                                },
+                                    flexDirection = FlexDirection.Row
+                                }
                             };
 
                             var container = new IMGUIContainer();
-                            container.onGUIHandler += () =>
-                            {
-                                cb?.Invoke();
-                            };
+                            container.onGUIHandler += () => { cb?.Invoke(); };
                             parent.Add(container);
                             toolbarZone.Add(parent);
                         }
@@ -95,9 +92,6 @@
                     sceneNames.Add(Path.GetFileNameWithoutExtension(scenePath));
                 }
 
-                //Add more SceneExtend Folder
-                SceneToolBarExtend.Instance.AddMoreSceneExtend(scenePaths, sceneNames);
-
                 _scenePaths = scenePaths.ToArray();
                 _sceneNames = sceneNames.ToArray();
             }
@@ -111,14 +105,12 @@
                 var sceneIndex = -1;
 
                 for (var i = 0; i < _sceneNames.Length; ++i)
-                {
                     if (sceneName == _sceneNames[i])
                     {
                         sceneIndex = i;
 
                         break;
                     }
-                }
 
                 var newSceneIndex = EditorGUILayout.Popup(sceneIndex, _sceneNames, GUILayout.Width(200.0f));
 

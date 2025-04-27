@@ -1,6 +1,4 @@
-﻿using GDKConfig = Models.GDKConfig;
-
-#if GDK_VCONTAINER
+﻿#if GDK_VCONTAINER
 #nullable enable
 namespace GameFoundation.Scripts
 {
@@ -35,8 +33,6 @@ namespace GameFoundation.Scripts
             builder.RegisterScreenManager();
             builder.RegisterApplicationServices(rootTransform);
             builder.RegisterGameQueueActionService();
-
-            builder.RegisterInstance(Resources.Load<GDKConfig>("GameConfigs/GDKConfig"));
 
             builder.Register<GameAssets>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.Register<ObjectPoolManager>(Lifetime.Singleton);

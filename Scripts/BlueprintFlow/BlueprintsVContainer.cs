@@ -16,6 +16,7 @@ namespace GameFoundation.BlueprintFlow
     using GameFoundation.Scripts.Utilities.Extension;
     using GameFoundation.Signals;
     using Models;
+    using UnityEngine;
     using VContainer;
 
     public static class BlueprintsVContainer
@@ -26,7 +27,7 @@ namespace GameFoundation.BlueprintFlow
             builder.Register<FetchBlueprintInfo>(Lifetime.Singleton);
             builder.Register<BlueprintDownloader>(Lifetime.Singleton);
             builder.Register<BlueprintReaderManager>(Lifetime.Singleton);
-            builder.Register(container => container.Resolve<GDKConfig>().GetGameConfig<BlueprintConfig>(), Lifetime.Singleton);
+            builder.RegisterInstance(Resources.Load<BlueprintConfig>("GameConfigs/BlueprintConfig"));
 
             typeof(IGenericBlueprintReader).GetDerivedTypes().ForEach(type => builder.Register(type, Lifetime.Singleton).AsInterfacesAndSelf());
 

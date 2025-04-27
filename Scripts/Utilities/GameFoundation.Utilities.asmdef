@@ -3,7 +3,6 @@
   "rootNamespace": "",
   "references": [
     "I2Localization.Scripts",
-    "MasterAAASound.Scripts",
     "Unity.TextMeshPro",
     "UniTask",
     "Unity.Timeline",
@@ -14,16 +13,9 @@
     "UniTask.Addressables",
     "Unity.ResourceManager",
     "Unity.Addressables",
-    "Zenject",
-    "VContainer",
-    "BuildScript.Runtime"
+    "VContainer"
   ],
   "versionDefines": [
-    {
-      "name": "com.svermeulen.extenject",
-      "expression": "",
-      "define": "GDK_ZENJECT"
-    },
     {
       "name": "jp.hadashikick.vcontainer",
       "expression": "",

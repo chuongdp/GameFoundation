@@ -82,6 +82,8 @@ namespace GameFoundation.Scripts.UIModule.ScreenFlow.Managers
         /// Cleanup/ destroy all screen on current scene
         /// </summary>
         public void CleanUpAllScreen();
+
+        public bool IsAnyPopupOpen();
     }
 
     public class ScreenManager : IScreenManager, ITickable, IInitializable, IDisposable
@@ -220,6 +222,10 @@ namespace GameFoundation.Scripts.UIModule.ScreenFlow.Managers
 
             this.CurrentActiveScreen.Value = null;
             this.previousActiveScreen      = null;
+        }
+        public bool IsAnyPopupOpen()
+        {
+            return this.activeScreens.Any(screen => this.CheckScreenIsPopup(screen));
         }
 
         public async UniTask CloseAllScreenAsync()
