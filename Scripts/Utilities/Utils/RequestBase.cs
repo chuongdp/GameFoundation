@@ -1,4 +1,4 @@
-namespace MiraiGameFoundation.Scripts.Utilities.Utils
+namespace MyGameFoundation.Scripts.Utilities.Utils
 {
     using System;
     using System.Text;

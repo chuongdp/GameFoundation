@@ -3,7 +3,7 @@ namespace Utilities.Utils
     using Cysharp.Threading.Tasks;
     using GameFoundation.DI;
     using GameFoundation.Scripts.Utilities.LogService;
-    using MiraiGameFoundation.Scripts.Utilities.Utils;
+    using MyGameFoundation.Scripts.Utilities.Utils;
     using Newtonsoft.Json;
     using UnityEngine;
 
